@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+	<typeAliases>
+		<!-- 이 파일의 역활은 데이터 저장빈 클래스 객체 별칭을 관리한다. -->
+		<typeAlias type="org.pub.vo.MemberVO" alias="m" />
+		<typeAlias type="org.pub.vo.MailVO" alias="mail" />
+		<typeAlias type="org.pub.vo.eBookVO" alias="ebook" />
+		<typeAlias type="org.pub.vo.GongjiVO" alias="gongji" />
+		<typeAlias type="org.pub.vo.FaqCategoryVO" alias="fcg"/>
+		<typeAlias type="org.pub.vo.FaqContentVO" alias="fct"/>
+		<typeAlias type="org.pub.vo.ReplyVO" alias="reply" />
+		<typeAlias type="org.pub.vo.LoanVO" alias="loan" />
+	</typeAliases>
+</configuration>

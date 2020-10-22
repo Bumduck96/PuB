@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Admin">
+<!-- 메인화면 -->
+<!-- 관리자 메인화면에서 공지사항 수 -->
+<select id="adIndex_gongjiCount" resultType="int">
+select count(*) from gongji
+</select>
+
+<!-- 관리자 메인화면에서 faq 수 -->
+<select id="adIndex_faqCount" resultType="int">
+select count(*) from faqContent
+</select>
+<!-- 관리자 메인화면에서 회원 수 -->
+<select id="adIndex_memberCount" resultType="int">
+select count(*) from member where state=1
+</select>
+<!-- 관리자 메인화면에서 ebook 수 -->
+<select id="adIndex_ebookCount" resultType="int">
+select count(*) from ebook 
+</select>
+<!--  메인화면에서 최근 공지사항 출력-->
+<select id="adIndex_gongjiList" resultType="gongji">
+select * from (
+select gongji_no, gongji_title, gongji_date
+from gongji order by gongji_no desc)
+where rownum &lt; 6
+</select>
+<!-- 메인화면에서 최근 faq 출력 -->
+<select id="adIndex_faqList" resultType="fct">
+select * from (
+select faqNo, Question
+from faqContent order by faqNo desc)
+where rownum &lt; 6
+</select>
+
+
+<select id="ad_count" resultType="int">
+select count(id) from member
+<where>
+<if test="find_field == ''"></if><!-- 전체 회원수 -->
+<if test="find_field == 'id'">
+id like #{find_name}
+</if>
+<if test="find_field == 'name'">
+name like #{find_name}
+</if>
+</where>
+</select>
+
+<select id="ad_list" resultType="m">
+select * from (select rowNum rNum, id, name,email,email_domain,state from
+(select * from member
+<where>
+<if test="find_field == ''"></if>
+<if test="find_field == 'id'">
+id like #{find_name}
+</if>
+<if test="find_field == 'name'">
+name like #{find_name}
+</if>
+</where>
+order by id asc))
+where rNum &gt;=#{startrow} and rNum &lt;=#{endrow}
+</select>
+
+<select id="ad_info" resultType="m">
+select * from member where id=#{id}
+</select>
+
+<update id="ad_edit">
+update member set email=#{email}, email_domain=#{email_domain}, name=#{name}, gender=#{gender},
+zipNo=#{zipNo}, roadAddrPart1=#{roadAddrPart1}, roadAddrPart2=#{roadAddrPart2}, addrDetail=#{addrDetail}
+
+where id=#{id}
+</update>
+
+<update id="ad_del">
+update member set state=2 where id=#{id}
+</update>
+
+<!-- 공지사항 sql -->
+<insert id="adBbs_in">
+insert into gongji (gongji_no,gongji_name,gongji_title,
+   gongji_pwd,gongji_cont,gongji_date)
+   values(g_no_seq.nextval,#{gongji_name},#{gongji_title},
+   #{gongji_pwd},#{gongji_cont},sysdate)
+</insert>
+
+<select id="adBbs_list" resultType="gongji">
+select * from 
+     (select rowNum rNum,gongji_no,gongji_name,gongji_title,
+     gongji_hit,gongji_date
+     from (select * from gongji     
+     <where>
+     <if test="find_field == ''">
+      <!-- 검색조건이 없어서 총레코드 개수 -->
+     </if>
+     <if test="find_field == 'gongji_title'">
+      <!-- 검색 조건이 제목인 경우 -->
+      gongji_title like #{find_name} <!-- like는 오라클 검색
+      연산자 -->
+     </if>
+     <if test="find_field == 'gongji_cont'">
+      gongji_cont like #{find_name}
+     </if>
+     </where>     
+      order by gongji_no desc)) 
+     where rNum &gt;= #{startrow} and rNum &lt;= #{endrow}
+   <!-- &gt;은 ~보다 크다(>), &lt;은 ~보다 작다(<) -->
+</select>
+
+<select id="adBbs_count" resultType="int">
+select count(gongji_no) from gongji
+     <where>
+     <if test="find_field == ''">
+      <!-- 검색조건이 없어서 총레코드 개수 -->
+     </if>
+     <if test="find_field == 'gongji_title'">
+      <!-- 검색 조건이 제목인 경우 -->
+      gongji_title like #{find_name} <!-- like는 오라클 검색
+      연산자 -->
+     </if>
+     <if test="find_field == 'gongji_cont'">
+      gongji_cont like #{find_name}
+     </if>
+     </where>
+</select>
+
+<select id="adBbs_cont" resultType="gongji">
+select * from gongji where gongji_no=#{no}
+</select>
+
+<update id="adBbs_edit">
+update gongji set gongji_title=#{gongji_title}, gongji_cont=#{gongji_cont} where gongji_no=#{gongji_no}
+</update>
+
+<delete id="adBbs_del">
+delete from gongji where gongji_no=#{no}
+</delete>
+
+<insert id="ad_join">
+<!-- 1은 가입회원 2는 탈퇴회원 -->
+insert into member (id, pw, name, gender, birth, zipNo, roadAddrPart1, roadAddrPart2, addrDetail, mem_phone1, mem_phone2, mem_phone3, email, email_domain, regdate, state)
+values(#{id},#{pw},#{name},#{gender},#{birth},#{zipNo},#{roadAddrPart1},#{roadAddrPart2},#{addrDetail},#{mem_phone1},#{mem_phone2},#{mem_phone3},#{email},#{email_domain},sysdate,1)
+</insert>
+
+<!-- faq -->
+<insert id="adFaq_in">
+insert into faqContent (faqNo,Question,Answer,cId) values(faqCont_no_seq.nextval,#{Question},#{Answer},#{cId})
+</insert>
+<select id="adFaq_count" resultType="int">
+select count(faqNo) from faqContent
+<where>
+<if test="find_field == ''">
+      <!-- 검색조건이 없어서 총레코드 개수 -->
+     </if>
+     <if test="find_field == 'Question'">
+      <!-- 검색 조건이 질문인 경우 -->
+     	question like #{find_name} <!-- like는 오라클 검색
+      연산자 -->
+     </if>
+     <if test="find_field == 'Answer'">
+      answer like #{find_name}
+     </if>
+     </where> 
+</select>
+
+<select id="adFaq_list" resultType="fct">
+select * from(
+select rowNum rNum, faqNo,Question,Answer,cId,chkCId from
+(select * from faqContent <where>
+     <if test="find_field == ''">
+      <!-- 검색조건이 없어서 총레코드 개수 -->
+     </if>
+     <if test="find_field == 'Question'">
+      <!-- 검색 조건이 질문인 경우 -->
+     	question like #{find_name} <!-- like는 오라클 검색
+      연산자 -->
+     </if>
+     <if test="find_field == 'Answer'">
+      answer like #{find_name}
+     </if>
+     </where>  
+     order by faqNo desc))
+     where rNum &gt;=#{startrow} and rNum &lt;=#{endrow}
+
+</select>
+
+<select id="adFaq_cont" resultType="fct">
+select * from faqContent where faqNo=#{no}
+</select>
+
+<update id="adFaq_edit">
+update faqContent set question=#{question}, answer=#{answer} where faqNo=#{faqNo}
+</update>
+
+<delete id="adFaq_del">
+delete from faqContent where faqNo=#{no}
+</delete>
+
+<select id="adEbook_list" parameterType="ebook" resultType="ebook">
+select * from (select rowNum rNum, e_no, title, author,
+ publisher, publication_year from 
+ (select * from ebook
+ <where>
+<if test="searchCondition == ''"></if>
+<if test="searchCondition == 'title'">
+title like #{searchKeyword}
+</if>
+<if test="searchCondition == 'author'">
+author like #{searchKeyword}
+</if>
+<if test="searchCondition == 'publisher'">
+publisher like #{searchKeyword}
+</if>
+</where>
+ order by e_no desc))
+ where rNum &gt;=#{startrow} and rNum &lt;=#{endrow}
+</select>
+
+<select id="adEbook_count" resultType="int">
+select count(e_no) from ebook
+<where>
+<if test="searchCondition == ''"></if>
+<if test="searchCondition == 'title'">
+title like #{searchKeyword}
+</if>
+<if test="searchCondition == 'author'">
+author like #{searchKeyword}
+</if>
+<if test="searchCondition == 'publisher'">
+publisher like #{searchKeyword}
+</if>
+</where>
+</select>
+
+
+
+<select id="adMem_info" resultType="m">
+select * from member where id=#{id}
+</select>
+
+<select id="adLoan_list" resultType="loan">
+select * from book_loan_info where id=#{id}
+</select>
+
+<select id="adLoanEbook_list" resultType="ebook">
+select e.title, e.isbn, e.publisher, e.e_no
+from member m, book_loan_info b, ebook e
+where m.id=b.id and b.e_no=e.e_no and m.id=#{id} and b.state=1
+order by b.loan_date desc
+</select>
+
+<select id="adLoanEbook_info" resultType="ebook">
+select * from(
+select rowNum, e.title, e.isbn, e.publisher,e.author,e.publication_year, e.e_no
+from member m, book_loan_info b, ebook e
+where m.id=b.id and b.e_no=e.e_no and m.id=#{id}
+order by b.loan_date desc)
+where rowNum=1
+</select>
+
+<!--
+<update id="adLoanEbook_return">
+update book_loan_info set state=2, return_date_ok=sysdate where e_no=#{e_no}
+</update>
+ -->
+<select id="adReturnEbook_list" resultType="ebook">
+select e.title, e.isbn, e.publisher, e.e_no
+from member m, book_loan_info b, ebook e
+where m.id=b.id and b.e_no=e.e_no and m.id=#{id} and b.state=2
+order by b.return_date_ok desc
+</select>
+
+<select id="getAdminReturnDate" resultType="String">
+select return_date from book_loan_info where id=#{id} and e_no=#{e_no} and state=1
+</select>
+<update id="adminBookstate_up">
+update ebook set status=status+1 where e_no=#{e_no}
+</update>
+<update id="adminBookReturn"><!-- 전자책 반납 -->
+update book_loan_info set state=#{state},return_date_ok=sysdate where id=#{id} and e_no=#{e_no} and state=1
+</update>
+</mapper>
+
