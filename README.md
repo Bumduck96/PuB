@@ -8,11 +8,11 @@
 이러한 포스트 코로나에 대비해 핵심 화두인 “언택트”에 이바지하고자 하며 비대면서비스를 확대하려는 노력에 발 맞춰 비대면 서비스를 활용한 도서 대출 서비스를 기획하고자 합니다.
 
 ## Team
-* 문영선 - 관리자 페이지, 도서관서비스
-* 박범석 - 메인, 전자도서관, 내서재
-* 나소현 - FAQ
-* 손양원 - UI기획
-* 유성근 - 공지사항, 도서관 안내, 마이페이지
+* PM - 문영선
+* PL - 박범석
+* PE - 나소현
+* PE - 유성근
+* QA - 손양원
 
 ## Prerequisties
 * JAVA - JDK 1.8.0_251(JDK 1.8이상 권장)
@@ -20,8 +20,13 @@
 * Tomcat - Apache Tomcat 9.0.30
 * Oracle - OracleXE184_Win64
 * STS - Spring Tools 3 (Standalone Edition) 3.9.11.RELEASE
+* Lombok - 1.18.16
 
-## Installing
+## Installation Process
+[참고]https://drive.google.com/drive/folders/1YLuwS1mqK5jttIC5Q7nIEAp9fEqJGZT-?usp=sharing <br>
+[구글 문서https://drive.google.com/file/d/1aUkubv1K_yQ9fLQUTRl4V55kSzaYFyjg/view?usp=sharing
+
+## Getting Started
 ### 1. Oracle 18c 사용자 생성 (cnd 콘솔창에서)
 ```
 C:>sqlplus /as sysdba
@@ -30,18 +35,27 @@ SQL>create tablespace javaoracle datafile 'C:\app\user\product\18.0.0\oradata\XE
 
 SQL>alter session set "_oracle_script"=true; //18c에서 오라클 사용자 생성을 11g와 같은 이전에 쓰던 방식으로 돌려준다. 비번 변경과는 관계 없다.
 
-SQL> create user week // 계정 생성
-2  identified by week // 패스워드 생성
+SQL> create user pub // 계정 생성
+2  identified by pub // 패스워드 생성
 3  default tablespace javaoracle // 위에서 생성한 테이블스페이스 명
 4  quota UNLIMITED ON javaoracle; // 테이블 스페이스의 제한량 무한대
 
-SQL> GRANT connect, resource TO week;
+SQL> GRANT connect, resource TO pub;
 ```
 ### 2. 톰캣 서버를 생성합니다.
 ### 3. 파일을 클론합니다. (import -> GIT)
+### 4. 정리.sql에서 테이블을 생성합니다.
+### 5. eBookController 187라인을 적절히 수정합니다. 
+```
+InputStream is=new FileInputStream(new File("C:/Users/User/Downloads/book.pdf"));
+```
+
+## MAIN PAGE
+![main](https://user-images.githubusercontent.com/51254596/97086534-d0c15480-165e-11eb-8c29-2632c20a7733.png)
 
 ## References
 * 국가전자도서관
-* 경기도 사이버 도서관
+* 경기도사이버도서관
+
 
 
