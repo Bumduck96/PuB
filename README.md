@@ -45,4 +45,3 @@ SQL> GRANT connect, resource TO week;
 * 경기도 사이버 도서관
 
 
-
