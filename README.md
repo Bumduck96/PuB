@@ -49,10 +49,6 @@ SQL> GRANT connect, resource TO pub;
 ```
 InputStream is=new FileInputStream(new File("C:/Users/User/Downloads/book.pdf"));
 ```
-
-## MAIN PAGE
-![main](https://user-images.githubusercontent.com/51254596/97086534-d0c15480-165e-11eb-8c29-2632c20a7733.png)
-
 ## References
 * 국가전자도서관
 * 경기도사이버도서관
